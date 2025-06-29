@@ -252,8 +252,8 @@ if (!sessionStorage.getItem('osLoaded')) {
   const progress = document.getElementById('loading-progress');
   overlay.style.display = 'flex';
 
-  // Pick a random loading time between 1 and 2.5 seconds
-  const loadTime = 1000 + Math.random() * 1500;
+  // Pick a random loading time between 5 and 7 seconds
+  const loadTime = 5000 + Math.random() * 2000;
   let start = null;
 
   // Animate the progress bar
