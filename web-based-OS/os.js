@@ -787,6 +787,51 @@ document.addEventListener('DOMContentLoaded', function() {
   // Check if user is on mobile device
   checkMobileDevice();
   
+  // Loading screen logic (moved inside DOMContentLoaded for better deployment compatibility)
+  if (!sessionStorage.getItem('osLoaded')) {
+    const overlay = document.getElementById('loading-overlay');
+    const progress = document.getElementById('loading-progress');
+    
+    if (overlay && progress) {
+      overlay.style.display = 'flex';
+
+      // Pick a random loading time between 5 and 7 seconds
+      const loadTime = 5000 + Math.random() * 2000;
+      let start = null;
+
+      // Animate the progress bar
+      function animateProgressBar(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = timestamp - start;
+        const percent = Math.min((elapsed / loadTime) * 100, 100);
+        progress.style.width = percent + '%';
+        if (elapsed < loadTime) {
+          requestAnimationFrame(animateProgressBar);
+        } else {
+          // Hide the overlay and set the session flag
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            try {
+              sessionStorage.setItem('osLoaded', '1');
+            } catch (e) {
+              console.warn('SessionStorage not available:', e);
+            }
+          }, 400);
+        }
+      }
+      requestAnimationFrame(animateProgressBar);
+    } else {
+      console.warn('Loading overlay elements not found');
+      // Fallback: hide overlay if elements don't exist
+      if (overlay) overlay.style.display = 'none';
+    }
+  } else {
+    // Hide overlay immediately if already loaded
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) overlay.style.display = 'none';
+  }
+  
   initializeDesktopIcons();
   initializeAppWindow();
   attachChromeAppHandler();
